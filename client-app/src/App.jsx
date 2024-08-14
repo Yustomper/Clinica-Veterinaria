@@ -12,11 +12,14 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import { Box, Flex } from '@chakra-ui/react';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 
 function App() {
   return (
     <AuthProvider>
+      <GoogleOAuthProvider clientId={googleClientId}>
       <Router>
       <Flex direction="column" minH="100vh">
         <Navbar />
@@ -33,6 +36,7 @@ function App() {
         <Footer />
       </Flex>
       </Router>
+      </GoogleOAuthProvider>
     </AuthProvider>
   );
 }

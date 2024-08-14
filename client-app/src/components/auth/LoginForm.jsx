@@ -20,6 +20,9 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { login } from '../../services/auth/authService';
+import { GoogleLogin } from '@react-oauth/google';  // Importar el componente GoogleLogin
+
+
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -62,6 +65,42 @@ export default function LoginForm() {
     }
   };
 
+  const handleGoogleSuccess = (response) => {
+    console.log(response); // Añadir un log para depuración
+    const userData = {
+      token: response.credential,
+      // Aquí puedes añadir más información del usuario si es necesario
+    };
+
+    // Guardar en localStorage o sessionStorage dependiendo de "Recordarme"
+    if (rememberMe) {
+      localStorage.setItem('userData', JSON.stringify(userData));
+    } else {
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+    }
+
+    loginContext(userData);
+    toast({
+      title: 'Inicio de sesión exitoso',
+      description: `Bienvenido`,
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+    navigate('/');
+  };
+
+  const handleGoogleFailure = (error) => {
+    console.error('Google Login Error:', error); // Añadir un log para depuración
+    toast({
+      title: 'Error al iniciar sesión',
+      description: 'No se pudo iniciar sesión con Google. Por favor, intenta nuevamente.',
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
   return (
     <Stack  direction={{ base: 'column', md: 'row' }}>
       <Flex p={8} flex={1} align={'center'} justify={'center'}>
@@ -100,18 +139,23 @@ export default function LoginForm() {
             o inicia sesión con
           </Text>
           <Stack >
+         
+          {/* <Button w={'full'} variant={'outline'} leftIcon={<FcGoogle />}>
+              <Center>
+                <Text>Iniciar sesión con Google</Text>
+              </Center>
+            </Button> */}
+          <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleFailure}
+                    />
             <Button w={'full'} colorScheme={'facebook'} leftIcon={<FaFacebook />}>
               <Center>
                 <Text>Iniciar sesión con Facebook</Text>
               </Center>
             </Button>
 
-            <Button w={'full'} variant={'outline'} leftIcon={<FcGoogle />}>
-              <Center>
-                <Text>Iniciar sesión con Google</Text>
-              </Center>
-            </Button>
-
+           
             <Button w={'full'} colorScheme={'messenger'} leftIcon={<SiLinkedin />}>
               <Center>
                 <Text>Iniciar sesión con LinkedIn</Text>
